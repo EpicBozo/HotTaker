@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from accounts.forms import SignUpForm, LoginForm
 from accounts.models import Account
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth import authenticate, login as auth_login
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -10,6 +9,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
+from .backend import EmailBackend
+from django.contrib.auth import login as auth_login  # Add this import
 
 # Create your views here.
 
@@ -17,6 +18,7 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
+            print("Form is valid")
             verify(form)
             return redirect('login')
         else:
@@ -27,17 +29,14 @@ def signup(request):
 
 def login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            print("User authenticated")
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
             auth_login(request, user)
-            return redirect('home')
-        else:
-            print("Invalid email or password")
-            return render(request, 'accounts/login.html', {'error': 'Invalid email or password'})
-    return render(request, 'accounts/login.html')
+            return redirect('signup')
+        return render(request, 'accounts/login.html', {'form': form})
+    form = LoginForm()
+    return render(request, 'accounts/login.html', {'form': form})
 
 def verify(form):
     user = form.save(commit=False)

@@ -2,6 +2,7 @@ from django import forms
 from accounts.models import Account
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from .backend import EmailBackend
 
 class SignUpForm(UserCreationForm):
     username = forms.CharField(max_length=50)
@@ -32,7 +33,6 @@ class SignUpForm(UserCreationForm):
 
         return user
 
-        
 class LoginForm(forms.ModelForm):
     email = forms.EmailField(max_length=50)
     password = forms.CharField(widget=forms.PasswordInput)
@@ -45,24 +45,14 @@ class LoginForm(forms.ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
         password = cleaned_data.get('password')
-
-        print(email, password)
         
         if email and password:
-            user = authenticate(email=email, password=password)
+            backend = EmailBackend()
+            user = backend.authenticate(None, email=email, password=password)
             if not Account.objects.filter(email=email).exists():
-                print("Debug: Email does not exist in the database")
                 raise forms.ValidationError("Email does not exist")
             if user is None:
-                print("Debug: Authentication failed, invalid email or password")
                 raise forms.ValidationError("Invalid email or password")
-            if user.check_password(password) is False:
-                print("Debug: Authentication failed, invalid email or password")
-                raise forms.ValidationError("Wrong password")
-            else:
-                print("Debug: Authentication successful")
-        else:
-            print("Debug: Email and password are required")
-            raise forms.ValidationError("Email and password are required")
+            cleaned_data['user'] = user
         return cleaned_data
 
