@@ -1,6 +1,6 @@
 from django import forms
 from accounts.models import Account
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 
 class SignUpForm(UserCreationForm):
@@ -41,17 +41,28 @@ class LoginForm(forms.ModelForm):
         model = Account
         fields = ['email', 'password']
         
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if not Account.objects.filter(email=email).exists():
-            raise forms.ValidationError("Email does not exist")
-        return email
-    
-    def clean_password(self):
-        email = self.cleaned_data['email']
-        password = self.cleaned_data['password']
-        user = Account.objects.get(email=email)
-        login(self, user)
-        if not user.check_password(password):
-            raise forms.ValidationError("Password is incorrect")
-        return password
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+        password = cleaned_data.get('password')
+
+        print(email, password)
+        
+        if email and password:
+            user = authenticate(email=email, password=password)
+            if not Account.objects.filter(email=email).exists():
+                print("Debug: Email does not exist in the database")
+                raise forms.ValidationError("Email does not exist")
+            if user is None:
+                print("Debug: Authentication failed, invalid email or password")
+                raise forms.ValidationError("Invalid email or password")
+            if user.check_password(password) is False:
+                print("Debug: Authentication failed, invalid email or password")
+                raise forms.ValidationError("Wrong password")
+            else:
+                print("Debug: Authentication successful")
+        else:
+            print("Debug: Email and password are required")
+            raise forms.ValidationError("Email and password are required")
+        return cleaned_data
+
