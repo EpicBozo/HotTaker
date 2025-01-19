@@ -22,8 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 signup_form.reset();
                 success_modal.classList.remove('hidden')
-            } else {
-                alert(data.error);
             }
         });
     });

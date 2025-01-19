@@ -53,6 +53,8 @@ class LoginForm(forms.ModelForm):
                 raise forms.ValidationError("Email does not exist")
             if user is None:
                 raise forms.ValidationError("Invalid email or password")
+            if not user.is_active:
+                raise forms.ValidationError("Account is not active")
             cleaned_data['user'] = user
         return cleaned_data
 

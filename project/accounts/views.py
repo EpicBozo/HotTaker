@@ -32,9 +32,12 @@ def login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
+            print("logged in")
             user = form.cleaned_data['user']
             auth_login(request, user)
             return redirect('signup')
+        else:
+            print(form.errors)
         return render(request, 'accounts/login.html', {'form': form})
     form = LoginForm()
     return render(request, 'accounts/login.html', {'form': form})

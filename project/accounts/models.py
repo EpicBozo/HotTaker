@@ -28,6 +28,8 @@ class Account(AbstractBaseUser):
     pfp = models.ImageField(upload_to='images/', default='images/default.jpg')
     status = models.CharField(max_length=50, default='')
     bio = models.TextField(max_length=500, default='')
+    is_active = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
 
     objects = AccountManager()
 
