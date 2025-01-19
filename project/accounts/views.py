@@ -21,16 +21,11 @@ def signup(request):
         if form.is_valid():
             print("Form is valid")
             verify(form)
-            if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-                print("Ajax for verified form")
-                return JsonResponse({'success': True, 'errors': form.errors})
-            return redirect('login')
+            return JsonResponse({'success': True})
         else:
             print("Form is not valid")
             print(form.errors)
-            if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-                print("Ajax for unverified form")
-                return JsonResponse({'success': False, 'errors': form.errors})
+            return JsonResponse({'success': False, 'errors': form.errors})
     return render(request, 'accounts/signup.html')
 
 def login(request):
