@@ -60,6 +60,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite default port
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
 TAILWIND_APP_NAME = 'theme'
 
 INTERNAL_IPS = [
