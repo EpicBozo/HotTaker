@@ -1,14 +1,25 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 500;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: rgba(255, 255, 255, 0.925);
   background-color: #242424;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+Header {
+  ul {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    list-style-type: none;
+
+    li {
+      a {
+        text-decoration: none;
+        color: rgb(0, 144, 196)
+      }
+    }
+  }
 }
