@@ -1,25 +1,115 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 500;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.925);
-  background-color: #242424;
+  --primary-color: white;
+  --secondary-bg: #fc7a7a61;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--background-color);
+  color: var(--color);
 }
 
 Header {
-  ul {
+  position: relative;
+  text-decoration: none;
+  line-height: 1.5;
+  font-weight: 500;
+
+  nav {
     position: relative;
     display: flex;
-    gap: 1rem;
-    list-style-type: none;
+    justify-content: space-between;
+    padding: 0.5rem 0.8rem 0 0.8rem;
+    align-items: center;
+    font-size: 2rem;
 
-    li {
-      a {
-        text-decoration: none;
-        color: rgb(0, 144, 196)
-      }
+    a {
+      text-decoration: none;
+      color: rgb(0, 144, 196)
     }
+  }
+
+  hr {
+    width: 99%;
+  }
+}
+
+right-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  feed {
+    display: flex;
+    align-items: center;
+
+    a {
+      font-size: 1.58rem;
+    }
+  }
+
+  post {
+    display: flex;
+    padding-left: 5px;
+    padding-right: 10px;
+    height: 2.8rem;
+    width: 4.8rem;
+    gap: 1px;
+    align-items: center;
+    background-color: rgba(73, 73, 73, 0);
+    transition: background-color 0.3s ease;
+    border-radius: 24px;
+    user-select: none;
+    cursor: pointer;
+
+    img {
+      width: 50%;
+      height: 50%;
+    }
+
+    p {
+      font-size: 1.48rem;
+      text-align: center;
+    }
+  }
+
+  post:hover {
+    background-color: rgb(73, 73, 73);
+  }
+}
+
+search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 4rem;
+  width: 37%;
+
+  input {
+    width: calc(100% - 1rem);
+    height: 2.7rem;
+    padding-left: 15px;
+    background-color: #7afcef61;
+    border: none;
+    border-radius: 42px;
+    outline: none;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  }
+
+  input:focus {
+    box-shadow: 0 0 8px var(--primary-color);
+    background-color: #7aeffc61;
+  }
+
+  input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0px;
+    font-size: 0.9rem;
   }
 }
