@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'accounts',
     'tailwind',
     'theme',
-    'django_browser_reload'
+    'django_browser_reload',
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -55,7 +57,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite default port
+]
+
+# Add this new setting
+FRONTEND_URL = "http://localhost:5173"
+
+CORS_ALLOW_CREDENTIALS = True
 
 TAILWIND_APP_NAME = 'theme'
 
