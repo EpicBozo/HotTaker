@@ -1,1 +1,2 @@
-#Share you wild hot takes!
+##HoTakers
+Share your wild hot takes!
