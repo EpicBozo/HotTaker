@@ -1,7 +1,9 @@
 import plusMark from "./assets/plusMark.svg";
-import { handleClick } from "./Events";
 
 function Header() {
+  function handleClick() {
+    console.log("anything");
+  }
   return (
     <header>
       <nav>
