@@ -64,6 +64,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default port
 ]
 
+# Add this new setting
+FRONTEND_URL = "http://localhost:5173"
+
 CORS_ALLOW_CREDENTIALS = True
 
 TAILWIND_APP_NAME = 'theme'

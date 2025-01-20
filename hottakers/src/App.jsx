@@ -1,3 +1,7 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/accounts/login';
+import SignUp from './components/accounts/signup';
+import VerificationSuccess from './components/accounts/verification_success';
 import axios from 'axios';
 import Header from './Header.jsx'
 
@@ -5,6 +9,8 @@ import Header from './Header.jsx'
 axios.defaults.baseURL = 'http://localhost:8000'; // or your Django backend URL
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.withCredentials = true; // if using session authentication
+
+
 
 function App() {
   return (

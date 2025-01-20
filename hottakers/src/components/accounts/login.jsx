@@ -17,7 +17,7 @@ const Login = () => {
         setError(null);
 
         try {
-            const response = await axios.post('/api/accounts/login/', formData);
+            const response = await axios.post('/api/login/', formData);
             if (response.data) {
                 // Store user data or token if needed
                 localStorage.setItem('user', JSON.stringify(response.data));

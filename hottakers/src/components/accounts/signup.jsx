@@ -20,7 +20,7 @@ const Signup = () => {
         setError(null);
 
         try {
-            const response = await axios.post('/api/accounts/signup/', formData);
+            const response = await axios.post('/api/signup/', formData);
             if (response.data.success) {
                 setShowModal(true);
             }

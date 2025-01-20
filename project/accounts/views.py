@@ -29,7 +29,7 @@ class SignUpView(APIView):
             user = Account.objects.create_user(
                 username=serializer.validated_data['username'],
                 email=serializer.validated_data['email'],
-                password=serializer.validated_data['password']
+                password=serializer.validated_data['password1']
             )
             verify_user(user)
             return Response({'success': True}, status=status.HTTP_201_CREATED)
@@ -85,7 +85,9 @@ def verify_user(user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     
-    verification_link = f"{settings.DOMAIN}/verify/{uid}/{token}"
+    # Use the dedicated FRONTEND_URL setting
+    verification_link = f"{settings.FRONTEND_URL}/verify/{uid}/{token}"
+    print(verification_link)
     send_verification_email(user.email, verification_link)
 
 def send_verification_email(email, verification_link):
@@ -96,3 +98,5 @@ def send_verification_email(email, verification_link):
 
     plain_message = strip_tags(message)
     send_mail(subject, plain_message, from_email, [to], html_message=message)
+    send_mail(subject, plain_message, from_email, [to], html_message=message)
+
