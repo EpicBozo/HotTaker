@@ -10,7 +10,7 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Sign Up</h2>
-        <form action="{% url 'signup' %}" method="POST" class="space-y-4">
+        <form data-url="{% url 'signup' %}" method="POST" class="space-y-4" id="signup_form">
             {% csrf_token %}
             <div class="flex flex-col">
                 <label for="username" class="text-gray-700 mb-1">Username</label>
@@ -23,8 +23,8 @@
                     class="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
             </div>
             <div class="flex flex-col">
-                <label for="password" class="text-gray-700 mb-1">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" 
+                <label for="password1" class="text-gray-700 mb-1">Password</label>
+                <input type="password" id="password1" name="password1" placeholder="Enter your password" 
                     class="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
             </div>
             <div class="flex flex-col">
@@ -32,10 +32,21 @@
                 <input type="password" id="password2" name="password2" placeholder="Confirm your password" 
                     class="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
             </div>
-            <button class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200">
+            <button class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200" type="submit">
                 Sign Up
             </button>
         </form>
     </div>
+
+    <div id="success_modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-md w-96">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Sign Up Successful</h2>
+            <p class="text-gray-700 mb-4 text-center">Your account has been created. Please check your email for verification.</p>
+            <a id="login" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200" href="{% url 'login' %}">
+                Login
+            </a>
+        </div>
+    </div>
+    <script src="{% static 'js/signup.js' %}"></script>
 </body>
 </html>
