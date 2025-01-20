@@ -54,7 +54,7 @@ right-nav {
     }
   }
 
-  post {
+  .post {
     display: flex;
     padding-left: 5px;
     padding-right: 10px;
@@ -79,7 +79,7 @@ right-nav {
     }
   }
 
-  post:hover {
+  .post:hover {
     background-color: rgb(73, 73, 73);
   }
 }
