@@ -10,12 +10,14 @@ def index(request):
 
 @api_view(['GET'])
 def check_auth(request):
+    print("Session ID:", request.session.session_key)
+    print("User authenticated:", request.user.is_authenticated)
     if request.user.is_authenticated:
         return Response({
             'isAuthenticated': True,
             'user': {
                 'username': request.user.username,
-                'email': request.user.username,
+                'email': request.user.email,
             }
         })
     return Response({'isAuthenticated': False}, status=status.HTTP_401_UNAUTHORIZED)

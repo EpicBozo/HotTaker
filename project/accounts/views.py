@@ -43,7 +43,8 @@ class LoginView(APIView):
         if serializer.is_valid():
             print("user is logged in")
             user = serializer.validated_data['user']
-            auth_login(request, user)
+            auth_login(request, user, backend='accounts.backend.EmailBackend')
+            print("user authenticated: ", request.user.is_authenticated)
             return Response(AccountSerializer(user).data)
         else:
             print("user is not logged in")

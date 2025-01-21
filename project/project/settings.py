@@ -94,9 +94,15 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'accounts.backend.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_SECURE = False  # Set to True in production
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 WSGI_APPLICATION = 'project.wsgi.application'
 NPM_BIN_PATH = os.getenv('NPM_BIN_PATH', "C:/Program Files/nodejs/npm.cmd")

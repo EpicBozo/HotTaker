@@ -19,6 +19,8 @@ function App() {
         <Header />
         <main className="flex-grow">
           <Routes>
+            {/* <Route path="/" element={<Home />} />
+            <Route path="/feed" element={<Feed />} /> */}
             <Route path="create-post/" element={<CreatePost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
