@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from .serializer import AccountSerializer, SignUpSerializer
+from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer
 
 # Create your views here.
 
@@ -39,27 +39,13 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        
-        if not email or not password:
-            return Response({'error': 'Please provide both email and password'},
-                          status=status.HTTP_400_BAD_REQUEST)
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            auth_login(request, user)
+            return Response(AccountSerializer(user).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        backend = EmailBackend()
-        user = backend.authenticate(request, email=email, password=password)
-
-        if user is None:
-            return Response({'error': 'Invalid credentials'},
-                          status=status.HTTP_401_UNAUTHORIZED)
-
-        if not user.is_active:
-            return Response({'error': 'Account is not active'},
-                          status=status.HTTP_401_UNAUTHORIZED)
-
-        auth_login(request, user)
-        serializer = AccountSerializer(user)
-        return Response(serializer.data)
 
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
