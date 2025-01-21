@@ -19,7 +19,7 @@ function App() {
         <Header />
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<CreatePost />} />
+            <Route path="create-post/" element={<CreatePost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/verify/:uid/:token" element={<VerificationSuccess />} />

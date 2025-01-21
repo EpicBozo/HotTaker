@@ -29,6 +29,7 @@ const CreatePost = () => {
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -41,31 +42,18 @@ const CreatePost = () => {
     }
 
     try {
-      // Here we need to make an API call to the py backend/db
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        body: postData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await axios.post("/api/create-posts/", postData);
+      if (response.data.success) {
+        // Redirect to the post detail page
+        navigate(`/create-posts/${response.data.post.id}`);
       }
-
-      const data = await response.json();
-      console.log("Success:", data);
-
-      setFormData({ title: "", description: "" });
-      setImage(null);
-      setImagePreview(null);
-      alert("Post created successfully!");
     } catch (err) {
-      console.error("Error:", err);
-      alert("Error creating post. Please try again.");
+      setError(err.response?.data || "An error occurred while creating the post");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
+  }
+  
   return (
     <div className="card">
       <div className="card-header">

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'theme',
     'django_browser_reload',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'posts',
 ]
 
 MIDDLEWARE = [
