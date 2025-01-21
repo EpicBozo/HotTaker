@@ -56,4 +56,5 @@ class LoginSerializer(serializers.Serializer):
             errors['account'] = 'Account is not active'
             raise serializers.ValidationError(errors)
             
+        data['user'] = user
         return data

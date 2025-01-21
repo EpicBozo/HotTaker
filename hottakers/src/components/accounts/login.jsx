@@ -21,10 +21,14 @@ const Login = () => {
             if (response.data) {
                 // Store user data or token if needed
                 localStorage.setItem('user', JSON.stringify(response.data));
-                navigate('/dashboard'); // or wherever you want to redirect after login
+                navigate('/feed'); // or wherever you want to redirect after login
             }
         } catch (err) {
-            setError(err.response?.data?.error || 'Invalid credentials');
+            if (err.response) {
+                const errors = err.response.data;
+                const errorMessage = Object.values(errors).flat()
+                setError(errorMessage[0])
+            }
         } finally {
             setLoading(false);
         }

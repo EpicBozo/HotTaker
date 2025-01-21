@@ -41,9 +41,12 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
+            print("user is logged in")
             user = serializer.validated_data['user']
             auth_login(request, user)
             return Response(AccountSerializer(user).data)
+        else:
+            print("user is not logged in")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -85,4 +88,3 @@ def send_verification_email(email, verification_link):
     plain_message = strip_tags(message)
     send_mail(subject, plain_message, from_email, [to], html_message=message)
     send_mail(subject, plain_message, from_email, [to], html_message=message)
-
