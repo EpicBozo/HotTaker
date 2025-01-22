@@ -1,0 +1,19 @@
+FROM node:18
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source files
+COPY . .
+
+# Build the app
+RUN npm run build
+
+# Expose the port
+EXPOSE 5173
+
+# Start the app
+CMD ["npm", "run", "dev", "--", "--port", "5173"]
