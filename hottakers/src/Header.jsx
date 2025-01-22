@@ -1,6 +1,7 @@
 import plusMark from "./assets/plusMark.svg";
 import { useState, useEffect, createContext } from "react";
 import axios from 'axios';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,22 +40,31 @@ function Header() {
 
         <right-nav>
           <feed>
-            <a href="#">Feed</a>
+            <a href="#">Feed</a> 
           </feed>
-          {isAuthenticated && (
+          {isAuthenticated && ( // If autheticated, show Post
           <div className="post" onClick={handleClick}>
             <img src={plusMark} alt="plus" />
             <p>Post</p>
           </div>
             )} 
-          {isAuthenticated ? (
+          {isAuthenticated ? ( // If autheticated, show profile and Post
             <profile>
-              <img
-              src= {`http://localhost:8000${user?.pfp}`}
-              alt="profile"
-              className="w-10 h-10 rounded-full"> 
-              
-              </img>
+              <Dropdown>
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                  <img
+                  src= {`http://localhost:8000${user?.pfp}`}
+                  alt="profile"
+                  className="w-10 h-10 rounded-full"> 
+                  
+                  </img>
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="bg-white shadow-lg rounded-md mt-2">
+                  <Dropdown.Item href="/profile">Profile</Dropdown.Item>
+                  <Dropdown.Item href="/settings">Settings</Dropdown.Item>
+                  <Dropdown.Item href="/logout">Logout</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </profile>
           ) : (
             <login>
