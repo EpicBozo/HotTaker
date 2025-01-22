@@ -5,7 +5,9 @@ import Footer from "./Footer.jsx";
 import Login from './components/accounts/Login';
 import SignUp from './components/accounts/signup';
 import VerificationSuccess from './components/accounts/verification_success';
+import VerifyEmail from './components/accounts/verify_email';
 import axios from 'axios';
+import { UserProvider } from './components/accounts/UserContext';
 
 // Set base URL for all axios requests
 axios.defaults.baseURL = 'http://localhost:8000';
@@ -21,10 +23,11 @@ function App() {
           <Routes>
             {/* <Route path="/" element={<Home />} />
             <Route path="/feed" element={<Feed />} /> */}
-            <Route path="create-post/" element={<CreatePost />} />
+            <Route path="/create-post" element={<CreatePost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/verify/:uid/:token" element={<VerificationSuccess />} />
+            <Route path="/verification-success" element={<VerificationSuccess />} />
           </Routes>
         </main>
         <Footer />

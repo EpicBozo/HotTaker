@@ -1,10 +1,11 @@
 import plusMark from "./assets/plusMark.svg";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import axios from 'axios';
 
 function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  
 
   function handleClick() {
     console.log("anything");
@@ -48,7 +49,12 @@ function Header() {
             )} 
           {isAuthenticated ? (
             <profile>
-              <a href="#">Profile</a>
+              <img
+              src= {`http://localhost:8000${user?.pfp}`}
+              alt="profile"
+              className="w-10 h-10 rounded-full"> 
+              
+              </img>
             </profile>
           ) : (
             <login>

@@ -55,17 +55,26 @@ class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
+        print(f"Verification attempt with uidb64: {uidb64}, token: {token}")
+
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = Account.objects.get(pk=uid)
+            print(f"Found user: {user.email}")
+
         except(TypeError, ValueError, OverflowError, Account.DoesNotExist):
             user = None
 
-        if user is not None and default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return Response({'success': True})
-        return Response({'error': 'Invalid verification link'}, 
+        if user is not None:
+            is_valid = default_token_generator.check_token(user, token)
+            print(f"Token valid: {is_valid}")  # Debug token validation
+            
+            if is_valid:
+                print(f"Activating user: {user.email}")  # Debug activation
+                user.is_active = True
+                user.save()
+                return Response({'success': True})
+            return Response({'error': 'Invalid verification link'}, 
                        status=status.HTTP_400_BAD_REQUEST)
 
 def verify_user(user):
@@ -87,5 +96,4 @@ def send_verification_email(email, verification_link):
     to = email
 
     plain_message = strip_tags(message)
-    send_mail(subject, plain_message, from_email, [to], html_message=message)
     send_mail(subject, plain_message, from_email, [to], html_message=message)

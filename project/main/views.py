@@ -18,6 +18,9 @@ def check_auth(request):
             'user': {
                 'username': request.user.username,
                 'email': request.user.email,
+                'pfp': request.user.pfp.url,
+                'status': request.user.status,
+                'bio': request.user.bio,
             }
         })
     return Response({'isAuthenticated': False}, status=status.HTTP_401_UNAUTHORIZED)

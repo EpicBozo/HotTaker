@@ -65,6 +65,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default port
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
 # Add this new setting
 FRONTEND_URL = "http://localhost:5173"
 
