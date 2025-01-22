@@ -25,7 +25,11 @@ const Signup = () => {
                 setShowModal(true);
             }
         } catch (err) {
-            setError(err.response?.data || 'An error occurred during signup');
+            if (err.response) {
+                const errors = err.response.data;
+                const errorMessage = Object.values(errors).flat()
+                setError(errorMessage[0])
+            }
         } finally {
             setLoading(false);
         }

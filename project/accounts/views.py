@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from .serializer import AccountSerializer, SignUpSerializer
+from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer
 
 # Create your views here.
 
@@ -39,43 +39,42 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        
-        if not email or not password:
-            return Response({'error': 'Please provide both email and password'},
-                          status=status.HTTP_400_BAD_REQUEST)
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            print("user is logged in")
+            user = serializer.validated_data['user']
+            auth_login(request, user, backend='accounts.backend.EmailBackend')
+            print("user authenticated: ", request.user.is_authenticated)
+            return Response(AccountSerializer(user).data)
+        else:
+            print("user is not logged in")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        backend = EmailBackend()
-        user = backend.authenticate(request, email=email, password=password)
-
-        if user is None:
-            return Response({'error': 'Invalid credentials'},
-                          status=status.HTTP_401_UNAUTHORIZED)
-
-        if not user.is_active:
-            return Response({'error': 'Account is not active'},
-                          status=status.HTTP_401_UNAUTHORIZED)
-
-        auth_login(request, user)
-        serializer = AccountSerializer(user)
-        return Response(serializer.data)
 
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
+        print(f"Verification attempt with uidb64: {uidb64}, token: {token}")
+
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = Account.objects.get(pk=uid)
+            print(f"Found user: {user.email}")
+
         except(TypeError, ValueError, OverflowError, Account.DoesNotExist):
             user = None
 
-        if user is not None and default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return Response({'success': True})
-        return Response({'error': 'Invalid verification link'}, 
+        if user is not None:
+            is_valid = default_token_generator.check_token(user, token)
+            print(f"Token valid: {is_valid}")  # Debug token validation
+            
+            if is_valid:
+                print(f"Activating user: {user.email}")  # Debug activation
+                user.is_active = True
+                user.save()
+                return Response({'success': True})
+            return Response({'error': 'Invalid verification link'}, 
                        status=status.HTTP_400_BAD_REQUEST)
 
 def verify_user(user):
@@ -98,5 +97,3 @@ def send_verification_email(email, verification_link):
 
     plain_message = strip_tags(message)
     send_mail(subject, plain_message, from_email, [to], html_message=message)
-    send_mail(subject, plain_message, from_email, [to], html_message=message)
-
