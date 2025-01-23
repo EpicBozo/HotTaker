@@ -2,31 +2,14 @@ import plusMark from "./assets/plusMark.svg";
 import { useState, useEffect, createContext } from "react";
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { useUser } from './components/accounts/UserContext';
 
 function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  
+  const { user, isAuthenticated } = useUser();
 
   function handleClick() {
     console.log("anything");
   }
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get('/api/auth/check');
-        setIsAuthenticated(response.data.isAuthenticated);
-        setUser(response.data.user);
-      } catch (error) {
-        setIsAuthenticated(false);
-        setUser(null);
-      }
-    };
-
-    checkAuth();
-  }, []);
-  
 
   return (
     <header>

@@ -56,7 +56,7 @@ class VerifyEmailView(APIView):
 
     def get(self, request, uidb64, token):
         print(f"Verification attempt with uidb64: {uidb64}, token: {token}")
-
+    
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = Account.objects.get(pk=uid)
