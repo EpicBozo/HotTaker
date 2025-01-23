@@ -1,21 +1,23 @@
-FROM node:18
+# Use Node.js 18 as the base image
+FROM node:18-alpine
 
+# Set the working directory
 WORKDIR /app
 
-# Copy package files
+# Copy only package files to install dependencies
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
-# Copy source files
+# Copy the rest of the application files
 COPY . .
 
-# Build the app
+# Build the application
 RUN npm run build
 
-# Expose the port
+# Expose the application port
 EXPOSE 5173
 
-# Start the app
-CMD ["npm", "run", "dev", "--", "--port", "5173"]
+# Start the application
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
