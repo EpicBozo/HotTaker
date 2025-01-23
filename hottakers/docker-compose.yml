@@ -2,21 +2,22 @@ version: '3.8'
 
 services:
   frontend:
-    build: ./hottakers
+    build: .
     ports:
       - "5173:5173"
     volumes:
-      - ./hottakers:/app
+      - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
 
   backend:
-    build: ./project
+    build:
+      context: ../project
     ports:
       - "8000:8000"
     volumes:
-      - ./project:/app
+      - ../project:/app
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=project.settings
