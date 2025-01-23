@@ -26,6 +26,7 @@ function Header() {
 
     checkAuth();
   }, []);
+  
 
   return (
     <header>

@@ -6,6 +6,7 @@ import Login from './components/accounts/Login';
 import SignUp from './components/accounts/signup';
 import VerificationSuccess from './components/accounts/verification_success';
 import VerifyEmail from './components/accounts/verify_email';
+import Logout from './components/accounts/logout';
 import axios from 'axios';
 import { UserProvider } from './components/accounts/UserContext';
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/verify/:uid/:token" element={<VerificationSuccess />} />
             <Route path="/verification-success" element={<VerificationSuccess />} />
+            <Route path="/logout" element= {<Logout />} />
           </Routes>
         </main>
         <Footer />

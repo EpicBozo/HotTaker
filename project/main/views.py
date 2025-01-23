@@ -26,8 +26,6 @@ def check_auth(request):
                 'bio': getattr(request.user, 'bio', ''),
             }
         })
+    else:
+        print("Not authenticated")
     return Response({'isAuthenticated': False}, status=status.HTTP_401_UNAUTHORIZED)
-
-def logout_view(request):
-    logout(request)
-    return HttpResponse('{"success": true}', content_type='application/json')
