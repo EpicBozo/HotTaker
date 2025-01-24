@@ -3,7 +3,7 @@ import Header from "./Header.jsx";
 import "./css/index.css";
 import CreatePost from "./CreatePost.jsx";
 import Footer from "./Footer.jsx";
-import Login from "./components/accounts/Login.jsx";
+import Login from "./components/accounts/login.jsx";
 import SignUp from "./components/accounts/signup.jsx";
 import VerificationSuccess from "./components/accounts/verification_success.jsx";
 // import VerifyEmail from './components/accounts/verify_email';

@@ -1,25 +1,25 @@
-#Base image
-FROM python:3.8
+# Use Python 3.10 as the base image
+FROM python:3.10-slim
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-#install system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    gcc\
-    python3-dev\
-    nodejs\
-    npm
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy the dependencies file to the working directory
+# Copy requirements file
 COPY requirements.txt .
 
-# Install any dependencies
-RUN pip install -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the content of the local src directory to the working directory
+# Copy the entire project
 COPY . .
 
-#Expose port
+# Expose the Django development server port
 EXPOSE 8000
+
+# Run migrations and start the server
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
