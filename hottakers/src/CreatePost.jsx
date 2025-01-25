@@ -1,6 +1,9 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -8,6 +11,7 @@ const CreatePost = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [setError] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +32,6 @@ const CreatePost = () => {
       reader.readAsDataURL(file);
     }
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,8 +55,8 @@ const CreatePost = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }
-  
+  };
+
   return (
     <div className="card">
       <div className="card-header">
