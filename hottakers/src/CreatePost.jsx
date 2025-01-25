@@ -42,6 +42,13 @@ const CreatePost = () => {
 
   const onSubmit = async (data) => {
     try {
+      //TODO: Test out changing Permission_classes in Views to see if it works
+      // Then add a CSRF token 
+      const csrfResponse = await axios.get("/api/csrf/", {
+        withCredentials: true
+      });
+      const csrfToken = csrfResponse.data.csrfToken;
+
       console.log('form data:', data)
       const postData = new FormData();
       postData.append("title", data.title);
@@ -53,11 +60,13 @@ const CreatePost = () => {
       console.log('Making request to create post...');
       const response = await axios.post("/api/create-posts/", postData,{
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'X-CSRFToken': csrfToken,
         },
         withCredentials: true
       });
       if (response.data.success) {
+        console.log("success")
         navigate(`/posts/${response.data.post.id}`);
       } else {
         console.log("Not successful L")

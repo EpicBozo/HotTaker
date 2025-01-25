@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.contrib.auth import logout
+from django.middleware.csrf import get_token
+from rest_framework.views import APIView
 
 # Create your views here.
 def index(request):
@@ -29,3 +31,10 @@ def check_auth(request):
     else:
         print("Not authenticated")
     return Response({'isAuthenticated': False}, status=status.HTTP_401_UNAUTHORIZED)
+
+class CSRFTokenView(APIView):
+    def get(self, request):
+        csrf_token = get_token(request)
+        return Response({
+            'csrfToken': csrf_token
+        })
