@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from './UserContext';
 import axios from 'axios';
 
 const Signup = () => {
@@ -13,6 +14,13 @@ const Signup = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { isAuthenticated } = useUser();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/feed');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './UserContext';
 import axios from 'axios';
 
 const Login = () => {
-    const { setIsAuthenticated, setUser } = useUser();
+    const { setIsAuthenticated, setUser, isAuthenticated } = useUser();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -12,6 +12,13 @@ const Login = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/feed');
+        }
+    }, [isAuthenticated, navigate]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,7 +30,7 @@ const Login = () => {
             if (response.data) {
                 // Store user data or token if needed
                 localStorage.setItem('user', JSON.stringify(response.data));
-                navigate('/feed'); // or wherever you want to redirect after login
+                navigate('/feed'); 
             }
         } catch (err) {
             if (err.response) {

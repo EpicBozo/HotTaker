@@ -1,88 +1,106 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useUser } from './components/accounts/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from "react-hook-form";
+import axios from 'axios';
 
 const CreatePost = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+  const navigate = useNavigate();
+  const {isAuthenticated, loading} = useUser();
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors, isSubmitting },
+    watch,
+    setValue
+  } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      image: null
+    }
   });
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // Authentication check
+  useEffect(() => {
+    if (!isAuthenticated && !loading) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate, loading]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
+  // Image preview handling
+  const watchedImage = watch("image");
+  useEffect(() => {
+    if (watchedImage?.[0]) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);
+        setValue('imagePreview', reader.result);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(watchedImage[0]);
     }
-  };
+  }, [watchedImage, setValue]);
 
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const postData = new FormData();
-    postData.append("title", formData.title);
-    postData.append("description", formData.description);
-    if (image) {
-      postData.append("image", image);
-    }
-
+  const onSubmit = async (data) => {
     try {
-      const response = await axios.post("/api/create-posts/", postData);
-      if (response.data.success) {
-        // Redirect to the post detail page
-        navigate(`/create-posts/${response.data.post.id}`);
-      }
-    } catch (err) {
-      setError(err.response?.data || "An error occurred while creating the post");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+      console.log('form data:', data)
+      const postData = new FormData();
+      postData.append("title", data.title);
+      postData.append("description", data.description);
   
+      if (data.image?.[0]) {
+        postData.append("image", data.image[0]);
+      }
+      console.log('Making request to create post...');
+      const response = await axios.post("/api/create-posts/", postData,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
+      if (response.data.success) {
+        navigate(`/posts/${response.data.post.id}`);
+      } else {
+        console.log("Not successful L")
+      }
+    } catch (error) {
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers
+    });
+  };
+}
+
   return (
     <div className="card">
       <div className="card-header">
         <h2>Create New Post</h2>
       </div>
       <div className="card-content">
-        <form onSubmit={handleSubmit} className="create-post-form">
+        <form onSubmit={handleSubmit(onSubmit)} className="create-post-form">
           <div className="form-group">
             <label htmlFor="title">Title</label>
             <input
               type="text"
               id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
+              {...register("title", { required: "Title is required" })}
             />
+            {errors.title && (
+              <span className="error">{errors.title.message}</span>
+            )}
           </div>
 
           <div className="form-group">
             <label htmlFor="description">Description</label>
             <textarea
               id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
               rows="4"
-              required
+              {...register("description", { required: "Description is required" })}
             />
+            {errors.description && (
+              <span className="error">{errors.description.message}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -96,15 +114,15 @@ const CreatePost = () => {
                   id="image"
                   className="hidden-input"
                   accept="image/*"
-                  onChange={handleImageChange}
+                  {...register("image")}
                 />
               </label>
             </div>
           </div>
 
-          {imagePreview && (
+          {watch('imagePreview') && (
             <div className="image-preview">
-              <img src={imagePreview} alt="Preview" />
+              <img src={watch('imagePreview')} alt="Preview" />
             </div>
           )}
 
