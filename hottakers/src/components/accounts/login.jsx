@@ -39,7 +39,20 @@ const Login = () => {
                 navigate('/feed');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            console.log('Error response:', err.response?.data);
+            const errorMessages = []
+
+            if(err.response?.data){
+                Object.entries(err.response.data).forEach(([field, messages]) => {
+                    if (Array.isArray(messages)) {
+                        errorMessages.push(...messages);
+                    } else if (typeof messages === 'string') {
+                        errorMessages.push(messages);
+                    }
+                });
+
+            }
+            setError(errorMessages[0]);
         }
     };
 
