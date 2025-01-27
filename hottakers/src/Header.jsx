@@ -1,5 +1,6 @@
 import plusMark from "./assets/plusMark.svg";
 import { useState, useEffect, createContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useUser } from './components/accounts/UserContext';
@@ -24,15 +25,13 @@ function Header() {
 
         <right-nav>
           <feed>
-            <a href="#">Feed</a> 
+            <Link to="/feed">Feed</Link>
           </feed>
-          {isAuthenticated && ( // If autheticated, show Post
-          <div className="post" onClick={handleClick}>
+          <Link to="/create-post" className="post">
             <img src={plusMark} alt="plus" />
             <p>Post</p>
-          </div>
-            )} 
-          {isAuthenticated ? ( // If autheticated, show profile and Post
+          </Link>
+          {isAuthenticated ? (
             <profile>
               <Dropdown>
                 <Dropdown.Toggle variant="success" id="dropdown-basic">

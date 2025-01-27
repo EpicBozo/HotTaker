@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useUser } from './components/accounts/UserContext';
+import { useUser } from '../accounts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
@@ -67,7 +67,7 @@ const CreatePost = () => {
       });
       if (response.data.success) {
         console.log("success")
-        navigate(`/posts/${response.data.post.id}`);
+        navigate(`/user-post/${response.data.post.id}`);
       } else {
         console.log("Not successful L")
       }
