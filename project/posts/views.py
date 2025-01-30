@@ -25,4 +25,10 @@ class ViewPostsView(APIView):
         serializer = PostSerializer(posts)
         return Response(serializer.data)
     
+class FeedView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
     

@@ -66,6 +66,7 @@ right-nav {
     width: 4.8rem;
     gap: 1px;
     align-items: center;
+    justify-content: center;
     background-color: rgba(73, 73, 73, 0);
     transition: background-color 0.3s ease;
     border-radius: 24px;
@@ -80,6 +81,10 @@ right-nav {
     p {
       font-size: 1.48rem;
       text-align: center;
+      line-height: 1; /* Add this to remove extra line height */
+      margin: 0; /* Add this to remove default margins */
+      display: flex; /* Add this */
+      align-items: center; /* Add this */
     }
   }
 

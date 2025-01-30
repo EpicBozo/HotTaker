@@ -12,6 +12,7 @@ import User_Post from './components/post/user-post';
 import Logout from './components/accounts/logout';
 import axios from 'axios';
 import { UserProvider } from './components/accounts/UserContext';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Set base URL for all axios requests
 axios.defaults.baseURL = 'http://localhost:8000';

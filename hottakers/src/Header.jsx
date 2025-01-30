@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useUser } from './components/accounts/UserContext';
+import './css/Header.css';
 
 function Header() {
   const { user, isAuthenticated } = useUser();
@@ -33,7 +34,7 @@ function Header() {
           </Link>
           {isAuthenticated ? (
             <profile>
-              <Dropdown>
+              <Dropdown className="dropdown">
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                   <img
                   src= {`http://localhost:8000${user?.pfp}`}
