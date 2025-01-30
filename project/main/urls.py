@@ -11,4 +11,5 @@ urlpatterns = [
     path('api/auth/check', views.check_auth, name="check_auth"),
     path('api/logout/', LogoutView.as_view(), name="logout"),
     path('api/csrf/', CSRFTokenView.as_view(), name="csrf"),
+    path('api/user-posts/', views.UserPostView.as_view(), name="posts"),
 ]

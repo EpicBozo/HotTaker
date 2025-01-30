@@ -26,6 +26,7 @@ def check_auth(request):
                 'pfp': request.user.pfp.url,
                 'status': getattr(request.user, 'status', None),
                 'bio': getattr(request.user, 'bio', ''),
+
             }
         })
     else:
@@ -37,4 +38,21 @@ class CSRFTokenView(APIView):
         csrf_token = get_token(request)
         return Response({
             'csrfToken': csrf_token
+        })
+
+class UserPostView(APIView):
+    def get(self, request):
+        from .models import Post
+        posts = Post.objects.all()
+        return Response({
+            'posts': [
+                {
+                    'title': post.title,
+                    'content': post.content,
+                    'author': post.author.username,
+                    'author_pfp': post.author.pfp.url,
+                    'date': post.date,
+                    'id': post.id
+                } for post in posts
+            ]
         })

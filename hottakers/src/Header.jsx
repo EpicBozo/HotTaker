@@ -44,8 +44,8 @@ function Header() {
                   </img>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="bg-white shadow-lg rounded-md mt-2">
-                  <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-                  <Dropdown.Item href="/settings">Settings</Dropdown.Item>
+                  <Dropdown.Item as={Link} to={`/${user?.username}`}>Profile</Dropdown.Item>
+                  <Dropdown.Item as={Link} to={`/settings`}>Settings</Dropdown.Item>
                   <Dropdown.Item href="/logout">Logout</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

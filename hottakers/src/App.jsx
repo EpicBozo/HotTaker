@@ -13,6 +13,7 @@ import Logout from './components/accounts/logout';
 import axios from 'axios';
 import { UserProvider } from './components/accounts/UserContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Profile from './components/accounts/profile';
 
 // Set base URL for all axios requests
 axios.defaults.baseURL = 'http://localhost:8000';
@@ -36,6 +37,7 @@ function App() {
               <Route path="/verification-failed" element={<VerificationFailed />} />
               <Route path="/logout" element= {<Logout />} />
               <Route path="/user-post/:postId" element={<User_Post />} />
+              <Route path="/:username" element={<Profile />} />
             </Routes>
           </main>
           <Footer />

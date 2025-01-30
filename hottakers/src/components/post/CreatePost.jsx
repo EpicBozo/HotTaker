@@ -67,7 +67,7 @@ const CreatePost = () => {
       });
       if (response.data.success) {
         console.log("success")
-        navigate(`/user-post/${response.data.post.id}`);
+        navigate(`/posts/${response.data.post.id}`);
       } else {
         console.log("Not successful L")
       }
