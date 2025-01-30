@@ -10,7 +10,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
 from .backend import EmailBackend
-from django.contrib.auth import login as auth_login  # Add this import
+from django.contrib.auth import login as auth_login, logout  
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -56,7 +56,7 @@ class VerifyEmailView(APIView):
 
     def get(self, request, uidb64, token):
         print(f"Verification attempt with uidb64: {uidb64}, token: {token}")
-
+    
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = Account.objects.get(pk=uid)
@@ -76,6 +76,13 @@ class VerifyEmailView(APIView):
                 return Response({'success': True})
             return Response({'error': 'Invalid verification link'}, 
                        status=status.HTTP_400_BAD_REQUEST)
+        
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        logout(request)
+        return Response({'success': True})
 
 def verify_user(user):
     user.is_active = False

@@ -1,31 +1,17 @@
 import plusMark from "./assets/plusMark.svg";
 import { useState, useEffect, createContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { useUser } from './components/accounts/UserContext';
+import './css/Header.css';
 
 function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  
+  const { user, isAuthenticated } = useUser();
 
   function handleClick() {
     console.log("anything");
   }
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get('/api/auth/check');
-        setIsAuthenticated(response.data.isAuthenticated);
-        setUser(response.data.user);
-      } catch (error) {
-        setIsAuthenticated(false);
-        setUser(null);
-      }
-    };
-
-    checkAuth();
-  }, []);
 
   return (
     <header>
@@ -40,17 +26,15 @@ function Header() {
 
         <right-nav>
           <feed>
-            <a href="#">Feed</a> 
+            <Link to="/feed">Feed</Link>
           </feed>
-          {isAuthenticated && ( // If autheticated, show Post
-          <div className="post" onClick={handleClick}>
+          <Link to="/create-post" className="post">
             <img src={plusMark} alt="plus" />
             <p>Post</p>
-          </div>
-            )} 
-          {isAuthenticated ? ( // If autheticated, show profile and Post
+          </Link>
+          {isAuthenticated ? (
             <profile>
-              <Dropdown>
+              <Dropdown className="dropdown">
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                   <img
                   src= {`http://localhost:8000${user?.pfp}`}
