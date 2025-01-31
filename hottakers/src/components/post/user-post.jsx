@@ -10,7 +10,7 @@ const user_post = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try{
-            const response = await axios.get(`/api/user-post/${postId}/`);
+            const response = await axios.get(`/api/posts/${postId}/`);
             setPosts(response.data);
             setPostsExists(true);
             } catch (err) {

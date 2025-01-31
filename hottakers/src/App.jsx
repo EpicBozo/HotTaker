@@ -36,7 +36,7 @@ function App() {
               <Route path="/verification-success" element={<VerificationSuccess />} />
               <Route path="/verification-failed" element={<VerificationFailed />} />
               <Route path="/logout" element= {<Logout />} />
-              <Route path="/user-post/:postId" element={<User_Post />} />
+              <Route path="/posts/:postId" element={<User_Post />} />
               <Route path="/:username" element={<Profile />} />
             </Routes>
           </main>

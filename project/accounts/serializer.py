@@ -5,7 +5,17 @@ from .backend import EmailBackend
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'email', 'username']
+        fields = [
+            'id', 
+            'username',
+            'email',
+            'pfp',
+            'status',
+            'bio',
+            'created_at',
+            'updated_at'
+        ]
+
 
 class SignUpSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)

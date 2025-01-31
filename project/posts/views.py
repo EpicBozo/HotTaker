@@ -3,7 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
-from .serializer import PostSerializer
+from .serializer import PostSerializer 
+from accounts.serializer import AccountSerializer
+from accounts.models import Account
 from .models import Post
 
 # Create your views here.
@@ -31,4 +33,24 @@ class FeedView(APIView):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+
+class GetUserPosts(APIView):
+    permission_classes = [IsAuthenticated]
     
+    def get(self, request, username):
+
+        #Gets posts
+        try:
+            posts = Post.objects.filter(author__username=username)
+            serializer = PostSerializer(posts, many=True)
+            
+            #Get account details
+            account = Account.objects.get(username=username)
+            account_serializer = AccountSerializer(account)
+            
+            return Response({
+                'posts': serializer.data,
+                'account': account_serializer.data
+            })
+        except Account.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

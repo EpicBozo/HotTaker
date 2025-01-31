@@ -37,7 +37,7 @@ const Feed = () => {
         ) : (
             <p>No posts found</p>
         )}
-    </div>
+        </div>
         
     );
 };
