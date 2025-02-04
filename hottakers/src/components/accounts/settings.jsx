@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useUser } from './UserContext';
 import SettingsSidebar from '../utility/settings_sidebar';
+import AccountSettings from './settings/AccountSettings';
 import '../../css/settings.css';
 import axios from 'axios';
 

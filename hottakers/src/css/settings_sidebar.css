@@ -23,3 +23,13 @@
   .sidebar nav ul li a:hover {
     text-decoration: underline;
   }
+
+  .sidebar-button {
+    transition: background-color 0.3s ease;
+    padding-right: 50%;
+  }
+
+  .sidebar-button:hover{
+    background-color: #474d4d;
+    
+  }
