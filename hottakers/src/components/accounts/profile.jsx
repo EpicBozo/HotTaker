@@ -29,7 +29,6 @@ const Profile = () => {
                     error: null
                 });
             } catch (err) {
-                // Add proper error handeling for no posts found and for no user founds
                 setProfileState({
                     userExists: false,
                     userInfo: null,

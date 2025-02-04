@@ -1,10 +1,10 @@
-import plusMark from "./assets/plusMark.svg";
+import plusMark from "../../assets/plusMark.svg";
 import { useState, useEffect, createContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { useUser } from './components/accounts/UserContext';
-import './css/Header.css';
+import { useUser } from '../accounts/UserContext';
+import '../../css/header.css';
 
 function Header() {
   const { user, isAuthenticated } = useUser();
