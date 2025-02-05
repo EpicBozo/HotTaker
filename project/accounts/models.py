@@ -30,6 +30,7 @@ class Account(AbstractBaseUser):
     bio = models.TextField(max_length=500, default='')
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    phone = models.CharField(max_length=15, default='')
     
 
     objects = AccountManager()

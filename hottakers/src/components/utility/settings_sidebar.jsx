@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-import { useUser } from './accounts/UserContext';
+import { useUser } from '../accounts/UserContext';
 import '../../css/settings_sidebar.css';
 import axios from 'axios';
 

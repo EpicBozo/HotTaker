@@ -8,13 +8,12 @@ import '../../css/settings.css';
 import axios from 'axios';
 
 const Settings = () => {
-    const { user, isAuthenticated } = useUser();
     const [activeSection, setActiveSection] = useState('account');
 
     const renderSection = () => {
         switch (activeSection) {
             case 'account':
-                return <div>Account Settings</div>;
+                return <AccountSettings />;
             case 'profile':
                 return <div>Profile Settings</div>;
             case 'password':

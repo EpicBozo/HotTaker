@@ -1,0 +1,24 @@
+.username, .email {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.username p, .email p {
+    margin: 0;
+    flex: 1;
+}
+
+.username button, .email button {
+    margin-left: 100px; /* confused on how this works */
+    flex-shrink: 0;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-container input {
+    margin-bottom: 10px; /* Adjust the spacing as needed */
+}
