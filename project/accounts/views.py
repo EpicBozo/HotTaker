@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from accounts.models import Account
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+from django.utils import timezone
 from django.utils import timezone
 from django.conf import settings
 from .backend import EmailBackend
@@ -14,6 +16,8 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
 from .EmailService import EmailService
+from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
+from .EmailService import EmailService
 
 # Create your views here.
 
@@ -22,8 +26,10 @@ class SignUpView(APIView):
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data, context={'request': request})
+        serializer = SignUpSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = Account.objects.create_user(
+                email=serializer.validated_data['email'],
                 email=serializer.validated_data['email'],
                 username=serializer.validated_data['username'],
                 password=serializer.validated_data['password1']
@@ -32,6 +38,7 @@ class SignUpView(APIView):
             email_service.send_verification_email(user)
             return Response(AccountSerializer(user).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LoginView(APIView):

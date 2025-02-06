@@ -6,6 +6,10 @@ import Modal from 'react-bootstrap/Modal';
 import '../../../css/AccountSettings.css';
 import axios from 'axios';
 
+
+// change onsubmit back to deafult
+// change the useForm values they may be creating an issue
+// i gotta finish this bruh
 const AccountSettings = () => {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useUser();
@@ -20,8 +24,8 @@ const AccountSettings = () => {
         setValue: setUsernameValue
     } = useForm({
         defaultValues: {
-            username: "",
-            password: ""
+          username: "",
+          password: ""
         }
     });
     
@@ -40,40 +44,34 @@ const AccountSettings = () => {
     
     // Fix username modal not opening type
     const handleClose = () => {
-        console.log('Modal closing');
+        console.log('Modal closing, current type:', modalType);
         setModalType(null);
+        setError(null);
+        reset();
+        console.log('Form reset, new values:', watch());
     };
     
     const handleShow = (type) => {
         console.log('Opening modal for:', type);
+        console.log('Current form values:', watch());
         setModalType(type);
     };
 
     const onSubmit = async (data) => {
+        console.log("=== Form Submission Started ===");
+        console.log("Form Data:", data);
+        console.log("Modal Type:", modalType);
+
         try {
-
             //CSRF token stuff idk ngl
-
+            console.log("Fetching CSRF token...");
             const csrfResponse = await axios.get("/api/csrf/", {
                 withCredentials: true
             });
+            console.log("CSRF Response:", csrfResponse);
             const csrfToken = csrfResponse.data.csrfToken;
-            let endpoint
-            switch(modalType){
-                case 'username':
-                    endpoint = '/api/change-username/';
-                    break;
-                case 'email':
-                    endpoint = '/api/change-email/';
-                    break;
-                case 'phone':
-                    endpoint = '/api/change-phone/';
-                    break;
-                default:
-                    console.log('Invalid modal type');
-                    return;
-            }
-            const response = await axios.post(endpoint, data, {
+
+            const response = await axios.post('/api/change-username/', data, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                   'X-CSRFToken': csrfToken,
@@ -81,12 +79,17 @@ const AccountSettings = () => {
                 withCredentials: true
               });
               
+            console.log('API Response:', response);
             if(response.data){
-                console.log('Username changed successfully');
+                console.log('Form submission successful');
+                setError(null);
+                reset();
+                handleClose();
             }
         }
         catch (err) {
-            console.log('Error response:', err.response?.data);
+            console.error('Form submission error:', err);
+            console.error('Error response:', err.response?.data);
             const errorMessages = []
 
             if(err.response?.data){
@@ -109,6 +112,10 @@ const AccountSettings = () => {
 
         setLoading(false);
     }, [isAuthenticated]);
+
+    useEffect(() => {
+        console.log("Form initialized with values:", watch());
+    }, [watch]);
 
     if (loading || !user) {
         return <div>Loading...</div>;
@@ -154,7 +161,7 @@ const AccountSettings = () => {
                             {error}
                         </div>
                     )}
-                    <form onSubmit={handleSubmitUsername(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="input-container">
                             <input
                                 type="text"
@@ -217,6 +224,59 @@ const AccountSettings = () => {
                     </form>
                 </Modal.Body>
             </Modal>
+
+            {/* Email Modal */}
+            <Modal show={modalType === 'email'} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Change Email</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Enter your new email and existing password</p>
+                    {error && typeof error === 'string' && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                            {error}
+                        </div>
+                    )}
+                     <form 
+                        onSubmit={(e) => {
+                            console.log("Form submit event triggered");
+                            handleSubmit((data) => {
+                                console.log("handleSubmit callback triggered with data:", data);
+                                onSubmit(data);
+                            })(e);
+                        }}
+                    >
+                        <div className="input-container">
+                            <input
+                                type="email"
+                                placeholder="New Email"
+                                className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                {...register("email", { 
+                                    required: "Email is required",
+                                    pattern: {
+                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: "Invalid email address"
+                                    }
+                                })}
+                            />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                {...register("password", { required: "Password is required" })}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className={`w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isSubmitting}
+                        >
+                            Save Changes
+                        </button>
+                    </form>
+                </Modal.Body>
+            </Modal>
+            
         </div>
     );
     }
