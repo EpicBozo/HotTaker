@@ -52,6 +52,7 @@ function AppContent() {
           <Route path="/:username" element={<Profile />} />
           <Route path="/user-not-found" element={<UserNotFound />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/verify-email/:uid/:token" element={<VerifyEmail />} />
         </Routes>
       </main>
       <Footer />

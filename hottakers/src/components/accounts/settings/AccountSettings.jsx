@@ -13,17 +13,30 @@ const AccountSettings = () => {
     const [modalType, setModalType] = useState(null); // State to track which modal is open
     const [error, setError] = useState(null);
     const { 
-        register, 
-        handleSubmit, 
-        formState: { errors, isSubmitting },
-        watch,
-        setValue
-      } = useForm({
+        register: registerUsername, 
+        handleSubmit: handleSubmitUsername, 
+        formState: { errors: usernameErrors, isSubmitting: isUsernameSubmitting },
+        watch: watchUsername,
+        setValue: setUsernameValue
+    } = useForm({
         defaultValues: {
-          username: "",
-          password: ""
+            username: "",
+            password: ""
         }
-      });
+    });
+    
+    const { 
+        register: registerEmail, 
+        handleSubmit: handleSubmitEmail, 
+        formState: { errors: emailErrors, isSubmitting: isEmailSubmitting },
+        watch: watchEmail,
+        setValue: setEmailValue
+    } = useForm({
+        defaultValues: {
+            email: "",
+            password: ""
+        }
+    });
     
     // Fix username modal not opening type
     const handleClose = () => {
@@ -45,8 +58,22 @@ const AccountSettings = () => {
                 withCredentials: true
             });
             const csrfToken = csrfResponse.data.csrfToken;
-
-            const response = await axios.post('/api/change-username/', data, {
+            let endpoint
+            switch(modalType){
+                case 'username':
+                    endpoint = '/api/change-username/';
+                    break;
+                case 'email':
+                    endpoint = '/api/change-email/';
+                    break;
+                case 'phone':
+                    endpoint = '/api/change-phone/';
+                    break;
+                default:
+                    console.log('Invalid modal type');
+                    return;
+            }
+            const response = await axios.post(endpoint, data, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                   'X-CSRFToken': csrfToken,
@@ -102,7 +129,7 @@ const AccountSettings = () => {
             </div>
             <div className="email">
                 <p>Email: {user.email}</p>
-                <button>Edit</button>
+                <button onClick={() => handleShow('email')}>Edit</button>
             </div>
             {user.phone ? (
                 <>
@@ -127,25 +154,63 @@ const AccountSettings = () => {
                             {error}
                         </div>
                     )}
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmitUsername(onSubmit)}>
                         <div className="input-container">
                             <input
                                 type="text"
                                 placeholder="New Username"
                                 className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                {...register("username", { required: "Username is required" })}
+                                {...registerUsername("username", { required: "Username is required" })}
                             />
                             <input
                                 type="password"
                                 placeholder="Password"
                                 className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                {...register("password", { required: "Password is required" })}
+                                {...registerUsername("password", { required: "Password is required" })}
                             />
                         </div>
                         <button
                             type="submit"
-                            className={`w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            disabled={isSubmitting}
+                            className={`w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 ${isUsernameSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isUsernameSubmitting}
+                        >
+                            Save Changes
+                        </button>
+                    </form>
+                </Modal.Body>
+            </Modal>
+
+            {/* Email Modal */}
+            <Modal show={modalType === 'email'} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Change Email</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Enter new Email and password</p>
+                    {error && typeof error === 'string' && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                            {error}
+                        </div>
+                    )}
+                    <form onSubmit={handleSubmitEmail(onSubmit)}>
+                        <div className="input-container">
+                            <input
+                                type="text"
+                                placeholder="New Email"
+                                className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                {...registerEmail("email", { required: "Email is required" })}
+                            />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                {...registerEmail("password", { required: "Password is required" })}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className={`w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 ${isEmailSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isEmailSubmitting}
                         >
                             Save Changes
                         </button>

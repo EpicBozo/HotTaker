@@ -31,6 +31,12 @@ class Account(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, default='')
+
+    # For changing email purposes
+
+    pending_email = models.EmailField(blank = True, null = True)
+    email_verification_token = models.CharField(max_length=100, blank=True, null=True)
+    email_token_created = models.DateTimeField(blank=True, null=True)
     
 
     objects = AccountManager()

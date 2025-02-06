@@ -1,12 +1,9 @@
 from django.shortcuts import render, redirect
 from accounts.models import Account
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_decode
+from django.utils import timezone
 from django.conf import settings
 from .backend import EmailBackend
 from django.contrib.auth import login as auth_login, logout  
@@ -15,7 +12,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer
+from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
+from .EmailService import EmailService
 
 # Create your views here.
 
@@ -23,16 +21,18 @@ class SignUpView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = SignUpSerializer(data=request.data)
+        serializer = SignUpSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = Account.objects.create_user(
-                username=serializer.validated_data['username'],
                 email=serializer.validated_data['email'],
+                username=serializer.validated_data['username'],
                 password=serializer.validated_data['password1']
             )
-            verify_user(user)
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
+            email_service = EmailService() # Dont trust it
+            email_service.send_verification_email(user)
+            return Response(AccountSerializer(user).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -51,6 +51,7 @@ class LoginView(APIView):
 
 
 class VerifyEmailView(APIView):
+    print("the other verify email view")
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
@@ -94,25 +95,46 @@ class ChangeUsernameView(APIView):
             user.save()
             return Response(AccountSerializer(user).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-def verify_user(user):
-    user.is_active = False
-    user.save()
-
-    token = default_token_generator.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
     
-    # Use the dedicated FRONTEND_URL setting
-    verification_link = f"{settings.FRONTEND_URL}/verify/{uid}/{token}"
-    print(verification_link)
-    send_verification_email(user.email, verification_link)
+class ChangeEmailView(APIView):
+    permission_classes = [IsAuthenticated]
 
-def send_verification_email(email, verification_link):
-    subject = 'Verify your email'
-    message = render_to_string('accounts/verify_email.html', {'link': verification_link})
-    from_email = settings.EMAIL_HOST_USER
-    to = email
+    def post(self, request):
+        serializer = ChangeEmailSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            new_email = serializer.validated_data['email']
 
-    plain_message = strip_tags(message)
-    send_mail(subject, plain_message, from_email, [to], html_message=message)
+            user.pending_email = new_email
+            user.save()
+            
+            email_service = EmailService()
+            email_service.send_change_email_verification_email(user)
+            return Response(AccountSerializer(user).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class VerifyNewEmailView(APIView):
+    print("VerifyNewEmailView called")
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = Account.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, Account.DoesNotExist):
+            user = None
+
+        if user is not None:
+            is_valid = default_token_generator.check_token(user, token)
+            if is_valid:
+                user.email = user.pending_email
+                user.pending_email = None
+                user.email_verification_token = None
+                user.email_token_created = None
+                user.save()
+                return Response({'success': True})
+            return Response({'error': 'Invalid verification link'}, 
+                       status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid verification link'}, 
+                       status=status.HTTP_400_BAD_REQUEST)
+    
