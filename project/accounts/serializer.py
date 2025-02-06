@@ -90,3 +90,23 @@ class ChangeUsernameSerializer(serializers.Serializer):
             raise serializers.ValidationError(errors)
         return data
         
+class ChangeEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        errors = {}
+
+        if not email or not password:
+            errors['blank'] = 'Email or Password field left blank'
+            raise serializers.ValidationError(errors)
+        if Account.objects.filter(email=email).exists():
+            errors['email'] = 'Email already exists'
+            raise serializers.ValidationError(errors)
+        if not self.context['request'].user.check_password(password):
+            errors['password'] = 'Incorrect password'
+            raise serializers.ValidationError(errors)
+        return data
