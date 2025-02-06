@@ -8,18 +8,18 @@ const Login = () => {
     const { setIsAuthenticated, setUser, isAuthenticated } = useUser();
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting },
-    watch,
-    setValue
-  } = useForm({
-    defaultValues: {
-      email: "",
-      password: ""
-    }
-  });
+    const { 
+        register, 
+        handleSubmit, 
+        formState: { errors, isSubmitting },
+        watch,
+        setValue
+    } = useForm({
+        defaultValues: {
+        email: "",
+        password: ""
+        }
+    });
 
   // Check authentication
     useEffect(() => {

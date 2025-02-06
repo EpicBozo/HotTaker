@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from accounts.forms import SignUpForm, LoginForm
 from accounts.models import Account
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -15,8 +14,8 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
-from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer
 
 # Create your views here.
 
@@ -84,6 +83,18 @@ class LogoutView(APIView):
         logout(request)
         return Response({'success': True})
 
+class ChangeUsernameView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangeUsernameSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            user.username = serializer.validated_data['username']
+            user.save()
+            return Response(AccountSerializer(user).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 def verify_user(user):
     user.is_active = False
     user.save()
@@ -104,3 +115,4 @@ def send_verification_email(email, verification_link):
 
     plain_message = strip_tags(message)
     send_mail(subject, plain_message, from_email, [to], html_message=message)
+

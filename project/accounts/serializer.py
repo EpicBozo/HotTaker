@@ -68,3 +68,25 @@ class LoginSerializer(serializers.Serializer):
             
         data['user'] = user
         return data
+    
+class ChangeUsernameSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+    
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
+
+        errors = {}
+
+        if not username or not password:
+            errors['blank'] = 'Username or Password field left blank'
+            raise serializers.ValidationError(errors)
+        if Account.objects.filter(username=username).exists():
+            errors['username'] = 'Username already exists'
+            raise serializers.ValidationError(errors)
+        if not self.context['request'].user.check_password(password):
+            errors['password'] = 'Incorrect password'
+            raise serializers.ValidationError(errors)
+        return data
+        
