@@ -41,6 +41,20 @@ const AccountSettings = () => {
         }
     });
     
+    const{
+        register: registerPassword,
+        handleSubmit: handleSubmitPassword,
+        formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+        watch: watchPassword,
+        setValue: setPasswordValue,
+        reset: resetPassword
+        } = useForm({
+            defaultValues: {
+                newPassword: "",
+                confirmPassword: ""
+            }
+        });
+
     const handleClose = () => {
         console.log('Modal closing, current type:', modalType);
         setModalType(null);
@@ -141,11 +155,11 @@ const AccountSettings = () => {
             />
             <div className="username">
                 <p>Username: {user.username}</p>
-                <button onClick={() => handleShow('username')}>Edit</button>
+                <button className="bg-gray-500 text-white px-4 py-1 rounded-md hover:bg-gray-400 active:bg-gray-300 transition duration-200" onClick={() => handleShow('username')}>Edit</button>
             </div>
             <div className="email">
                 <p>Email: {user.email}</p>
-                <button onClick={() => handleShow('email')}>Edit</button>
+                <button className="bg-gray-500 text-white px-4 py-1 rounded-md hover:bg-gray-400 active:bg-gray-300 transition duration-200" onClick={() => handleShow('email')}>Edit</button>
             </div>
             {user.phone ? (
                 <>
@@ -157,6 +171,10 @@ const AccountSettings = () => {
             )}
             <p>Bio: {user.bio}</p>
             <p>Member since: {user.date_joined}</p>
+
+            <div className = "change_password" onClick={() => handleShow('password')}>
+                <button className="w-2xl bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200">Change Password</button>
+            </div>
 
             {/* Username Modal */}
             <Modal show={modalType === 'username'} onHide={handleClose}>
@@ -234,6 +252,43 @@ const AccountSettings = () => {
                 </Modal.Body>
             </Modal>
             
+            {/* Password Modal */}
+            <Modal show={modalType === 'password'} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Change Password</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Enter your new username and existing password</p>
+                    {error && typeof error === 'string' && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                            {error}
+                        </div>
+                    )}
+                    <form onSubmit={handleSubmitPassword(onSubmit)}>
+                        <div className="input-container">
+                            <input
+                                type="password"
+                                placeholder="New Password"
+                                className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                {...registerPassword("newPassword", { required: "New password is required" })}
+                            />
+                            <input
+                                type="password"
+                                placeholder="Confrim Password"
+                                className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                {...registerPassword("confirmPassword", { required: "Confirm password is required" })}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className={`w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 ${isPasswordSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isPasswordSubmitting}
+                        >
+                            Save Changes
+                        </button>
+                    </form>
+                </Modal.Body>
+            </Modal>
         </div>
     );
     }
