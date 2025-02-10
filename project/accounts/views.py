@@ -2,9 +2,7 @@ from django.shortcuts import render, redirect
 from accounts.models import Account
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.utils import timezone
 from django.utils import timezone
 from django.conf import settings
 from .backend import EmailBackend
@@ -16,8 +14,6 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
 from .EmailService import EmailService
-from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
-from .EmailService import EmailService
 
 # Create your views here.
 
@@ -26,10 +22,8 @@ class SignUpView(APIView):
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data, context={'request': request})
-        serializer = SignUpSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = Account.objects.create_user(
-                email=serializer.validated_data['email'],
                 email=serializer.validated_data['email'],
                 username=serializer.validated_data['username'],
                 password=serializer.validated_data['password1']
@@ -38,8 +32,6 @@ class SignUpView(APIView):
             email_service.send_verification_email(user)
             return Response(AccountSerializer(user).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -125,23 +117,23 @@ class VerifyNewEmailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
-        try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = Account.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, Account.DoesNotExist):
-            user = None
+            
+            # Find out why its showing the wronng verficiation page
 
-        if user is not None:
-            is_valid = default_token_generator.check_token(user, token)
-            if is_valid:
-                user.email = user.pending_email
-                user.pending_email = None
-                user.email_verification_token = None
-                user.email_token_created = None
-                user.save()
-                return Response({'success': True})
-            return Response({'error': 'Invalid verification link'}, 
-                       status=status.HTTP_400_BAD_REQUEST)
-        return Response({'error': 'Invalid verification link'}, 
-                       status=status.HTTP_400_BAD_REQUEST)
+            if user is not None:
+                is_valid = default_token_generator.check_token(user, token)
+                if is_valid:
+                    user.email = user.pending_email
+                    user.pending_email = None
+                    user.email_verification_token = None
+                    user.email_token_created = None
+                    user.save()
+                    print("Email changes")
+                    return Response({'success': True}, status=status.HTTP_200_OK)
+                else:
+                    print("Invalid verification link")
+                    return Response({'success': False, 'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': False, 'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
     
