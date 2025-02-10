@@ -14,6 +14,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializer import AccountSerializer, SignUpSerializer, LoginSerializer, ChangeUsernameSerializer, ChangeEmailSerializer
 from .EmailService import EmailService
+from .Tokens import TokenVerificationMixin
 
 # Create your views here.
 
@@ -49,32 +50,24 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class VerifyEmailView(APIView):
+class VerifyEmailView(APIView, TokenVerificationMixin):
     print("the other verify email view")
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
-        print(f"Verification attempt with uidb64: {uidb64}, token: {token}")
-    
-        try:
-            uid = urlsafe_base64_decode(uidb64).decode()
-            user = Account.objects.get(pk=uid)
-            print(f"Found user: {user.email}")
+         permission_classes = [AllowAny]
 
-        except(TypeError, ValueError, OverflowError, Account.DoesNotExist):
-            user = None
-
-        if user is not None:
-            is_valid = default_token_generator.check_token(user, token)
-            print(f"Token valid: {is_valid}")  # Debug token validation
+    def get(self, request, uidb64, token):
+        result = self.verify_token(uidb64, token)
+        if not result['success']:
+            return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
             
-            if is_valid:
-                print(f"Activating user: {user.email}")  # Debug activation
-                user.is_active = True
-                user.save()
-                return Response({'success': True})
-            return Response({'error': 'Invalid verification link'}, 
-                       status=status.HTTP_400_BAD_REQUEST)
+        user = result['user']
+        if result['is_valid']:
+            user.is_active = True
+            user.save()
+            return Response({'success': True})
+        return Response({'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
         
 class LogoutView(APIView):
     permission_classes = [AllowAny]
@@ -112,28 +105,23 @@ class ChangeEmailView(APIView):
             return Response(AccountSerializer(user).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class VerifyNewEmailView(APIView):
-    print("VerifyNewEmailView called")
+class VerifyNewEmailView(APIView, TokenVerificationMixin):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
-            uid = urlsafe_base64_decode(uidb64).decode()
-            user = Account.objects.get(pk=uid)
+        result = self.verify_token(uidb64, token)
+        
+        if not result['success'] or not result['is_valid']:
+            return Response(
+                {'error': 'Invalid verification link'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
             
-            # Find out why its showing the wronng verficiation page
-
-            if user is not None:
-                is_valid = default_token_generator.check_token(user, token)
-                if is_valid:
-                    user.email = user.pending_email
-                    user.pending_email = None
-                    user.email_verification_token = None
-                    user.email_token_created = None
-                    user.save()
-                    print("Email changes")
-                    return Response({'success': True}, status=status.HTTP_200_OK)
-                else:
-                    print("Invalid verification link")
-                    return Response({'success': False, 'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({'success': False, 'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
-    
+        user = result['user']
+        user.email = user.pending_email
+        user.pending_email = None
+        user.email_verification_token = None
+        user.email_token_created = None
+        user.save()
+        
+        return Response({'success': True}, status=status.HTTP_200_OK)

@@ -13,20 +13,19 @@ const VerifyEmail = () => {
                 const path = window.location.pathname;
                 const type = path.split('/')[1];
 
-                switch(type){
+                switch(type) {
+                    // Ama sleep, for now fix current verification issue
                     case 'verify-email':
-                        console.log('New email verification');
+                        console.log('Attempting email change verification');
                         endpoint = `/api/verify-email/${uidb64}/${token}/`;
                         break;
-                    case 'reset-password':
-                        endpoint = 'not set yet';
-                        break;
                     case 'verify':
-                        console.log('sign up verification');
+                        console.log('Attempting signup verification');
                         endpoint = `/api/verify/${uidb64}/${token}/`;
                         break;
                     default:
-                        break;
+                        console.log('Unknown verification type:', type);
+                        throw new Error('Invalid verification type');
                 }
 
                 const response = await axios.get(endpoint);
